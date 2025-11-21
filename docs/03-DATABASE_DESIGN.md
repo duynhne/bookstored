@@ -12,6 +12,8 @@
 
 ### Overview ERD
 
+```mermaid
+erDiagram
     USERS {
         int id PK
         string username UK
@@ -85,6 +87,13 @@
         datetime created_at
         datetime updated_at
     }
+
+    %% Relationships
+    USERS ||--o{ CART : "has"
+    USERS ||--o{ ORDERS : "places"
+    BOOKS ||--o{ CART : "in"
+    BOOKS ||--o{ ORDER_ITEMS : "contains"
+    ORDERS ||--o{ ORDER_ITEMS : "has"
 ```
 
 ## Tables
