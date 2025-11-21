@@ -42,6 +42,10 @@ Diagram này bao gồm:
 - Filter & search functionality
 
 ## 🔄 Complete Order Flow Overview
+
+```mermaid
+graph TD
+    Start([Customer places order]) --> CreateItems
     CreateItems --> UpdateStock[Update Book Stock]
     UpdateStock --> ClearCart[Clear Cart]
     ClearCart --> CommitTx[COMMIT TRANSACTION]
