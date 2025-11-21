@@ -1,0 +1,72 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#6366f1'}}}%%
+graph TB
+    subgraph "Client Layer"
+        Browser[Web Browser]
+    end
+    
+    subgraph "Frontend - React SPA"
+        FE[Frontend App<br/>Port 5173]
+        FE_UI[UI Components]
+        FE_Pages[Pages]
+        FE_Context[Contexts<br/>Auth, Cart]
+        FE_Service[API Service]
+        
+        FE --> FE_UI
+        FE --> FE_Pages
+        FE --> FE_Context
+        FE --> FE_Service
+    end
+    
+    subgraph "Backend - Flask API"
+        direction TB
+        API[Flask API<br/>Port 5000]
+        
+        subgraph "Presentation Layer"
+            Routes[Routes<br/>auth, books, cart, orders, admin]
+        end
+        
+        subgraph "Business Logic Layer"
+            Services[Services<br/>AuthService, BookService, etc.]
+            Validators[Validators<br/>Business Rules]
+            Workflows[Workflows<br/>Order Processing]
+            DTOs[DTOs<br/>Data Transfer Objects]
+        end
+        
+        subgraph "Data Access Layer"
+            DAOs[DAOs<br/>UserDAO, BookDAO, etc.]
+        end
+        
+        API --> Routes
+        Routes --> Services
+        Services --> Validators
+        Services --> Workflows
+        Services --> DTOs
+        Workflows --> DAOs
+        Services --> DAOs
+    end
+    
+    subgraph "Database Layer"
+        DB[(PostgreSQL<br/>Port 5432)]
+        PGAdmin[pgAdmin 4<br/>Port 5050]
+    end
+    
+    subgraph "Storage Layer"
+        MinIO[MinIO Object Storage<br/>Port 9000/9001]
+    end
+    
+    Browser -->|HTTP/HTTPS| FE
+    FE_Service -->|REST API Calls| API
+    DAOs -->|SQL Queries| DB
+    PGAdmin -.->|Manage| DB
+    API -->|File Upload| MinIO
+    
+    classDef frontend fill:#a5f3fc,stroke:#0891b2,stroke-width:2px
+    classDef backend fill:#c7d2fe,stroke:#6366f1,stroke-width:2px
+    classDef database fill:#fef08a,stroke:#ca8a04,stroke-width:2px
+    classDef storage fill:#fda4af,stroke:#e11d48,stroke-width:2px
+    
+    class FE,FE_UI,FE_Pages,FE_Context,FE_Service frontend
+    class API,Routes,Services,Validators,Workflows,DTOs,DAOs backend
+    class DB,PGAdmin database
+    class MinIO storage
+

@@ -1,0 +1,138 @@
+sequenceDiagram
+    participant C as Customer
+    participant FE as Frontend
+    participant BE as Backend<br/>(Routes)
+    participant BL as Business Logic<br/>(Services/Workflows)
+    participant DB as Database
+    
+    %% Browse Books
+    rect rgb(240, 248, 255)
+        Note over C,DB: 1. Browse Books
+        C->>FE: Visit homepage
+        FE->>BE: GET /api/books?page=1&per_page=15
+        BE->>DB: Query books with pagination
+        DB-->>BE: Books data
+        BE-->>FE: JSON response
+        FE-->>C: Display books (5x3 grid)
+        
+        C->>FE: Click "Xem Thêm"
+        FE->>BE: GET /api/books?page=2&per_page=15
+        BE->>DB: Query next page
+        DB-->>BE: More books
+        BE-->>FE: JSON response
+        FE-->>C: Append to existing list
+    end
+    
+    %% Add to Cart
+    rect rgb(240, 255, 240)
+        Note over C,DB: 2. Add to Cart
+        C->>FE: Click book → Enter quantity → Add to cart
+        FE->>BE: POST /api/cart {book_id, quantity}
+        BE->>BE: Check @login_required
+        BE->>DB: Check if book in cart already
+        alt Book already in cart
+            BE->>DB: UPDATE cart SET quantity = quantity + input
+        else New book
+            BE->>DB: INSERT INTO cart
+        end
+        DB-->>BE: Success
+        BE-->>FE: 201 Created + cart_item
+        FE->>FE: Update CartContext (total items)
+        FE-->>C: Toast: "Đã thêm vào giỏ hàng"
+    end
+    
+    %% View & Update Cart
+    rect rgb(255, 250, 240)
+        Note over C,DB: 3. View & Manage Cart
+        C->>FE: Click cart icon
+        FE->>BE: GET /api/cart
+        BE->>DB: SELECT * FROM cart WHERE user_id=?
+        DB-->>BE: Cart items with book details
+        BE-->>FE: JSON {cart_items, total}
+        FE-->>C: Display cart page
+        
+        opt Update Quantity
+            C->>FE: Change quantity → Click update
+            FE->>BE: PUT /api/cart/:id {quantity}
+            BE->>DB: UPDATE cart SET quantity=?
+            DB-->>BE: Success
+            BE-->>FE: 200 OK
+            FE->>FE: Recalculate total
+            FE-->>C: Update UI
+        end
+        
+        opt Remove Item
+            C->>FE: Click "Xóa"
+            FE->>BE: DELETE /api/cart/:id
+            BE->>DB: DELETE FROM cart WHERE id=?
+            DB-->>BE: Success
+            BE-->>FE: 200 OK
+            FE->>FE: Remove from list, update total
+            FE-->>C: Update UI
+        end
+    end
+    
+    %% Checkout
+    rect rgb(255, 240, 245)
+        Note over C,DB: 4. Checkout Process
+        C->>FE: Click "Thanh toán"
+        FE-->>C: Show checkout page
+        C->>FE: Fill: shipping address, phone
+        C->>FE: Click "Đặt hàng"
+        FE->>BE: POST /api/orders {shipping_address, phone}
+        
+        BE->>BL: OrderService.create_order()
+        BL->>BL: Validate cart not empty
+        BL->>BL: Call OrderWorkflow.create_order_with_items()
+        
+        BL->>DB: BEGIN TRANSACTION
+        BL->>DB: Calculate total from cart
+        BL->>DB: INSERT INTO orders (user_id, total_amount, address, phone)
+        DB-->>BL: order_id
+        
+        loop For each cart item
+            BL->>DB: INSERT INTO order_items (order_id, book_id, quantity, price)
+            BL->>DB: UPDATE books SET stock = stock - quantity
+        end
+        
+        BL->>DB: DELETE FROM cart WHERE user_id=?
+        BL->>DB: COMMIT TRANSACTION
+        DB-->>BL: Success
+        
+        BL-->>BE: OrderDTO
+        BE-->>FE: 201 Created + Order details
+        FE->>FE: Clear CartContext
+        FE-->>C: Redirect to /orders
+        FE-->>C: Toast: "Đặt hàng thành công!"
+    end
+    
+    %% View Orders
+    rect rgb(245, 240, 255)
+        Note over C,DB: 5. View Order History
+        C->>FE: Click "Đơn hàng của tôi"
+        FE->>BE: GET /api/orders
+        BE->>DB: SELECT orders with items WHERE user_id=?
+        DB-->>BE: Orders list with items
+        BE-->>FE: JSON {orders: [...]}
+        FE-->>C: Display order history
+        
+        C->>FE: Click order to view details
+        FE->>BE: GET /api/orders/:id
+        BE->>DB: SELECT order with items WHERE id=?
+        DB-->>BE: Order details
+        BE-->>FE: JSON order object
+        FE-->>C: Display full order details
+    end
+    
+    %% Admin Updates Order Status
+    rect rgb(255, 245, 230)
+        Note over C,DB: 6. Admin Updates Order Status
+        Note right of C: Customer continues<br/>to check order status
+        C->>FE: Refresh order page
+        FE->>BE: GET /api/orders/:id
+        BE->>DB: Get current status
+        DB-->>BE: status: "confirmed"
+        BE-->>FE: JSON with updated status
+        FE-->>C: Show: "Đã xác nhận" (blue badge)
+    end
+
