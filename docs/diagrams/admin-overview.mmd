@@ -1,6 +1,6 @@
 %%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#6366f1'}}}%%
 graph TB
-    Start([Admin/Staff User]) --> Login[/admin/login]
+    Start([Admin/Staff User]) --> Login[Admin Login Page]
     Login --> EnterCreds[Enter Credentials]
     EnterCreds --> Validate{Valid & Role<br/>is admin/staff?}
     
@@ -30,9 +30,9 @@ graph TB
     BannersDetail --> Dashboard
     StatsDetail --> Dashboard
     
-    Logout --> LogoutAPI[POST /api/logout]
+    Logout --> LogoutAPI[POST logout API]
     LogoutAPI --> ClearSession[Clear Session]
-    ClearSession --> RedirectLogin[Redirect to /admin/login]
+    ClearSession --> RedirectLogin[Redirect to Admin Login]
     RedirectLogin --> End([End])
     
     style Start fill:#e1f5e1
