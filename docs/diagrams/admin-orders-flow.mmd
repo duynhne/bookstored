@@ -25,7 +25,7 @@ flowchart TD
     %% Update Payment Status
     Action -->|Update Payment| SelectOrderPay[Select Order]
     SelectOrderPay --> ShowPayModal[Show Payment Modal:<br/>Current: Pending/Paid]
-    ShowPayModal --> SelectPayStatus[Select Status:<br/>- Pending (Chưa TT)<br/>- Paid (Đã TT)]
+    ShowPayModal --> SelectPayStatus[Select Status:<br/>- Pending - Chưa TT<br/>- Paid - Đã TT]
     SelectPayStatus --> ConfirmPay{Confirm?}
     ConfirmPay -->|No| ListOrders
     

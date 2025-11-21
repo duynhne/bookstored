@@ -6,6 +6,49 @@
 
 Bookstore là một hệ thống thương mại điện tử hoàn chỉnh cho việc bán sách trực tuyến. Dự án được xây dựng với kiến trúc hiện đại, chia tách rõ ràng giữa Frontend, Backend và Database, sử dụng Docker để containerization.
 
+## 📊 Diagram Types
+
+Dự án bao gồm 2 loại diagrams để phục vụ các mục đích khác nhau:
+
+### 🎨 High-level Business Flow Diagrams
+
+**Mục đích**: Presentation, báo cáo tốt nghiệp, trình bày với business stakeholders
+
+**Đặc điểm**:
+- Tập trung vào business logic và user journey
+- Không có technical details (API endpoints, SQL queries)
+- Dễ hiểu cho non-technical audiences
+- Phù hợp cho overview presentations
+
+**Diagrams**:
+- `high-level-customer-journey.mmd` - Customer journey từ browse đến nhận hàng
+- `high-level-admin-workflow.mmd` - Admin daily workflow
+- `high-level-order-processing.mmd` - Order lifecycle from business perspective
+
+### 🔧 Technical Implementation Diagrams
+
+**Mục đích**: Development, code review, technical documentation
+
+**Đặc điểm**:
+- Chi tiết technical implementation
+- Bao gồm API endpoints, SQL operations
+- Class diagrams, Component diagrams
+- Sequence diagrams với API calls
+- Database ERD với constraints và indexes
+
+**Diagrams**:
+- System Architecture, Data Flow
+- Backend Class Diagram, Frontend Component Diagram
+- Authentication Flow, Cart Flow
+- Customer Order Flow (technical), Admin Order Management (technical)
+- Admin module flows (Books, Users, Orders, Banners, Statistics)
+- Database ERD (enhanced)
+- Deployment Diagram
+
+**📁 Location**: Tất cả diagrams nằm trong `diagrams/` folder, sử dụng Mermaid format (.mmd)
+
+---
+
 ## 📋 Mục Lục Tài Liệu
 
 ### Phần I: Tổng Quan
