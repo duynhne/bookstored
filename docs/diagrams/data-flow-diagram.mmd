@@ -1,0 +1,121 @@
+graph LR
+    %% User Layer
+    User([User<br/>Customer/Admin/Staff])
+    
+    %% Client Layer
+    subgraph "Client Layer - Browser"
+        Browser[Web Browser<br/>Chrome, Firefox, Safari]
+        
+        subgraph "React Application"
+            Components[React Components<br/>Pages, UI Elements]
+            Contexts[Context State<br/>Auth, Cart, Toast]
+            ReactRouter[React Router<br/>Navigation]
+        end
+        
+        APIService[API Service Layer<br/>Axios HTTP Client]
+    end
+    
+    %% Network Layer
+    HTTP[HTTP/HTTPS<br/>REST API Calls]
+    
+    %% Server Layer
+    subgraph "Server Layer - Backend"
+        Nginx[Nginx<br/>Reverse Proxy<br/>Port 80]
+        
+        subgraph "Flask Application"
+            Routes[Flask Routes<br/>API Endpoints]
+            
+            subgraph "Business Logic Layer"
+                Services[Services<br/>Business Rules]
+                Validators[Validators<br/>Input Validation]
+                Workflows[Workflows<br/>Complex Operations]
+                DTOs[DTOs<br/>Data Transformation]
+            end
+            
+            subgraph "Data Access Layer"
+                DAOs[DAOs<br/>Database Operations]
+            end
+        end
+    end
+    
+    %% Persistence Layer
+    subgraph "Persistence Layer"
+        PostgreSQL[(PostgreSQL Database<br/>Port 5432<br/>User, Book, Order, Cart)]
+        MinIO[MinIO Object Storage<br/>Port 9000<br/>Images, Files]
+    end
+    
+    %% Data Flow - Request
+    User -->|1. Interact| Browser
+    Browser -->|2. Render| Components
+    Components <-->|3. State Management| Contexts
+    Components -->|4. Navigation| ReactRouter
+    Components -->|5. API Call| APIService
+    
+    APIService -->|6. HTTP Request| HTTP
+    HTTP -->|7. Forward Request| Nginx
+    Nginx -->|8. Route to Backend| Routes
+    
+    Routes -->|9. Delegate| Services
+    Services -->|10. Validate Input| Validators
+    Services -->|11. Complex Logic| Workflows
+    Services -->|12. Transform| DTOs
+    
+    Services -->|13. Query/Command| DAOs
+    Workflows -->|13. Query/Command| DAOs
+    
+    DAOs -->|14. SQL Operations| PostgreSQL
+    Services -->|15. File Upload/Download| MinIO
+    
+    %% Data Flow - Response
+    PostgreSQL -->|16. Data| DAOs
+    MinIO -->|17. File URL| Services
+    
+    DAOs -->|18. Model Objects| Services
+    DTOs -->|19. DTO Objects| Services
+    Services -->|20. Response Data| Routes
+    
+    Routes -->|21. JSON Response| Nginx
+    Nginx -->|22. HTTP Response| HTTP
+    HTTP -->|23. Response Data| APIService
+    
+    APIService -->|24. Update State| Contexts
+    APIService -->|25. Update UI| Components
+    Components -->|26. Display| Browser
+    Browser -->|27. Show Result| User
+    
+    %% Specific Flows
+    subgraph "Authentication Flow"
+        AuthFlow[Login Request → Routes → AuthService → UserDAO → PostgreSQL<br/>← UserDTO → Session Created → Frontend Updates AuthContext]
+    end
+    
+    subgraph "Cart Flow"
+        CartFlow[Add to Cart → Routes → CartService → CartDAO → PostgreSQL<br/>← Cart Updated → Frontend Updates CartContext → Badge Count]
+    end
+    
+    subgraph "Order Flow"
+        OrderFlow[Checkout → Routes → OrderService → OrderWorkflow<br/>→ Transaction: Create Order, Order Items, Update Stock, Clear Cart<br/>← OrderDTO → Frontend Redirects to Orders Page]
+    end
+    
+    subgraph "File Upload Flow"
+        FileFlow[Upload Image → Routes → MinIO.put_object()<br/>← File URL Returned → Save URL in PostgreSQL]
+    end
+    
+    %% Styling
+    style User fill:#e1f5e1,stroke:#22c55e,stroke-width:2px
+    style Browser fill:#a5f3fc,stroke:#0891b2,stroke-width:2px
+    style Components fill:#dbeafe,stroke:#3b82f6
+    style Contexts fill:#fef08a,stroke:#ca8a04
+    style APIService fill:#c7d2fe,stroke:#6366f1,stroke-width:2px
+    style HTTP fill:#e9d5ff,stroke:#9333ea,stroke-width:2px
+    style Nginx fill:#fed7aa,stroke:#ea580c,stroke-width:2px
+    style Routes fill:#fda4af,stroke:#e11d48
+    style Services fill:#fecaca,stroke:#dc2626
+    style DAOs fill:#fbcfe8,stroke:#ec4899
+    style PostgreSQL fill:#fef3c7,stroke:#eab308,stroke-width:3px
+    style MinIO fill:#d1fae5,stroke:#059669,stroke-width:2px
+    
+    style AuthFlow fill:#e0e7ff,stroke:#6366f1
+    style CartFlow fill:#fef3c7,stroke:#ca8a04
+    style OrderFlow fill:#fecdd3,stroke:#e11d48
+    style FileFlow fill:#d1fae5,stroke:#059669
+

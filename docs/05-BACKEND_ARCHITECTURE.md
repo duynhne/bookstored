@@ -4,6 +4,8 @@
 
 Backend được xây dựng với Flask framework, theo kiến trúc 3 lớp (3-Layer Architecture) để tách biệt responsibilities và dễ bảo trì.
 
+**📊 Xem Class Diagram:** [`diagrams/backend-class-diagram.mmd`](diagrams/backend-class-diagram.mmd)
+
 ## 🏗 Cấu Trúc Backend
 
 ```

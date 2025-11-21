@@ -1,5 +1,101 @@
 # Changelog - Bookstore Migration
 
+## [2.6.0] - 2024-11-21
+
+### Diagram Refactoring for Thesis Report
+
+#### Overview
+Refactored all diagrams để phù hợp với đồ án tốt nghiệp:
+- **Before**: 7 diagrams (some too long và phức tạp)
+- **After**: 16 diagrams (clear, concise, professional)
+
+#### New Admin Diagrams (6 files)
+Tách `admin-flow.mmd` (128 lines) thành 6 diagrams riêng biệt:
+
+1. **`admin-overview.mmd`**: Tổng quan admin panel với 5 modules
+2. **`admin-books-flow.mmd`**: CRUD operations cho Books (add, edit, delete, search/filter)
+3. **`admin-users-flow.mmd`**: Quản lý Customers & Staff (auto-generate codes, toggle status)
+4. **`admin-orders-flow.mmd`**: Order management từ phía admin (update status, payment)
+5. **`admin-banners-flow.mmd`**: CRUD operations cho Banners (upload, toggle, delete)
+6. **`admin-statistics-flow.mmd`**: Statistics dashboard (revenue, orders, top books)
+
+#### New Order Flow Diagrams (2 files)
+Tách `order-flow.mmd` (139 lines) thành 2 perspectives:
+
+1. **`customer-order-flow.mmd`**: Customer journey (browse → cart → checkout → track)
+   - Item selection với checkboxes
+   - Bulk delete selected items
+   - Checkout với selected items only
+   - View order history với badges
+   
+2. **`admin-order-management-flow.mmd`**: Admin order management
+   - View all orders
+   - Update order status workflow
+   - Update payment status (independent)
+   - Filter & search
+
+#### New Relationship Diagrams (3 files)
+
+1. **`backend-class-diagram.mmd`**: UML Class Diagram
+   - Models (User, Book, Order, OrderItem, Cart, Banner)
+   - DAOs (Data Access Objects)
+   - DTOs (Data Transfer Objects)
+   - Services (Business Logic)
+   - Validators
+   - Workflows
+   - Relationships với arrows và dependencies
+
+2. **`frontend-component-diagram.mmd`**: React Component Hierarchy
+   - App → Router → Routes
+   - Public Routes (HomePage, CartPage, CheckoutPage, etc.)
+   - Admin Routes (Dashboard, Management pages)
+   - UI Components Library (Button, Input, Table, Modal, Toast, etc.)
+   - Contexts (Auth, Cart, Toast)
+   - Services (API layer)
+   - Component dependencies
+
+3. **`data-flow-diagram.mmd`**: End-to-end Data Flow
+   - User → Browser → React → Context → API Service
+   - HTTP → Nginx → Flask → Services → DAOs → PostgreSQL
+   - Specific flows: Authentication, Cart, Order, File Upload
+   - Request/Response cycle với 27 steps
+
+#### Enhanced Database ERD
+
+**Updated `database-erd.mmd`** với detailed constraints:
+- PRIMARY KEY, FOREIGN KEY specifications
+- UNIQUE, NOT NULL constraints
+- CHECK constraints (role IN, status IN, price >= 0, stock >= 0)
+- DEFAULT values
+- INDEX columns
+- ON DELETE CASCADE/RESTRICT rules
+- Relationship cardinality với foreign key notes
+
+#### Documentation Updates
+
+Updated diagram references trong các docs:
+- `docs/02-SYSTEM_ARCHITECTURE.md`: Link to system-architecture.mmd & data-flow-diagram.mmd
+- `docs/03-DATABASE_DESIGN.md`: Link to enhanced database-erd.mmd
+- `docs/05-BACKEND_ARCHITECTURE.md`: Link to backend-class-diagram.mmd
+- `docs/06-FRONTEND_ARCHITECTURE.md`: Link to frontend-component-diagram.mmd
+- `docs/08-ORDER_FLOW.md`: Link to customer-order-flow.mmd & admin-order-management-flow.mmd
+
+#### Cleanup
+
+Removed old complex diagrams:
+- `admin-flow.mmd` (replaced by 6 new files)
+- `order-flow.mmd` (replaced by 2 new files)
+
+#### Benefits
+
+- ✅ Mỗi diagram ngắn gọn (~30-50 lines instead of 128-139)
+- ✅ Dễ hiểu, dễ present trong báo cáo tốt nghiệp
+- ✅ Professional structure with clear separation of concerns
+- ✅ Comprehensive coverage: flows, relationships, data models
+- ✅ Suitable for thesis defense và documentation
+
+---
+
 ## [2.5.0] - 2024-11-21
 
 ### CI/CD Setup
@@ -34,6 +130,13 @@
   - Node.js (node_modules, npm-debug.log)
   - Docker volumes (postgres_data_prod, minio_data_prod, pgadmin_data_prod)
   - Frontend build artifacts (dist, build)
+  
+### Bug Fixes
+- **Frontend Build**: Fixed Vite build errors for production
+  - Added `@types/node` to package.json for Node.js type declarations
+  - Updated `vite.config.ts` to use ES module compatible `__dirname` (fileURLToPath)
+  - Changed `index.html` script path from `/src/main.tsx` to `./src/main.tsx`
+  - Added `base: '/'` to Vite config
   
 ### Benefits
 - ✅ Automated builds on every push to main

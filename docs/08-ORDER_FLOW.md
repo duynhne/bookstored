@@ -3,51 +3,45 @@
 ## 🛒 Tổng Quan
 
 Luồng đặt hàng là **core business process** của hệ thống, bao gồm:
-1. Browse books → Add to cart
-2. View & manage cart
-3. Checkout with shipping info
+
+### Customer Flow:
+1. Browse books → Add to cart (with item selection)
+2. View & manage cart (select items, update, delete)
+3. Checkout with shipping info (only selected items)
 4. Create order (transaction)
-5. View order history
-6. Admin updates order status
+5. View order history & track status
 
-## 📊 Complete Order Flow Diagram
+### Admin Flow:
+1. View all orders
+2. Update order status (Pending → Confirmed → Completed/Cancelled)
+3. Update payment status (Pending → Paid)
+4. Filter & search orders
 
-```mermaid
-graph TD
-    Start([Customer visits site]) --> Browse[Browse Books]
-    Browse --> Detail[View Book Detail]
-    
-    Detail --> CheckAuth{Logged in?}
-    CheckAuth -->|No| Login[Redirect to /login]
-    Login --> LoginSuccess[Login Success]
-    LoginSuccess --> Detail
-    
-    CheckAuth -->|Yes| AddCart[Add to Cart<br/>POST /api/cart]
-    AddCart --> UpdateCart[Update Cart State]
-    UpdateCart --> Continue{Continue<br/>shopping?}
-    
-    Continue -->|Yes| Browse
-    Continue -->|No| ViewCart[View Cart<br/>GET /api/cart]
-    
-    ViewCart --> CartActions{Cart Action}
-    CartActions -->|Update Qty| UpdateQty[PUT /api/cart/:id]
-    UpdateQty --> ViewCart
-    CartActions -->|Remove| RemoveItem[DELETE /api/cart/:id]
-    RemoveItem --> ViewCart
-    CartActions -->|Checkout| ValidateCart{Cart empty?}
-    
-    ValidateCart -->|Yes| EmptyError[Show error]
-    EmptyError --> Browse
-    
-    ValidateCart -->|No| CheckoutPage[Checkout Page]
-    CheckoutPage --> FillInfo[Fill shipping address<br/>& phone]
-    FillInfo --> SubmitOrder[Submit Order<br/>POST /api/orders]
-    
-    SubmitOrder --> Workflow[OrderWorkflow]
-    Workflow --> BeginTx[BEGIN TRANSACTION]
-    BeginTx --> CalcTotal[Calculate Total]
-    CalcTotal --> CreateOrder[Create Order Record]
-    CreateOrder --> CreateItems[Create Order Items]
+## 📊 Sequence Diagrams
+
+### Customer Order Flow
+**Xem diagram chi tiết:** [`diagrams/customer-order-flow.mmd`](diagrams/customer-order-flow.mmd)
+
+Diagram này bao gồm:
+- Browse books với pagination (5x3 grid, "Xem Thêm")
+- Add to cart với authentication check
+- Cart management với item selection checkboxes
+- Bulk delete selected items
+- Checkout với selected items only
+- Backend transaction: Create order + order items + update stock + clear cart
+- View order history với COD badge & status badge
+
+### Admin Order Management Flow
+**Xem diagram chi tiết:** [`diagrams/admin-order-management-flow.mmd`](diagrams/admin-order-management-flow.mmd)
+
+Diagram này bao gồm:
+- View all orders với customer info
+- View order details modal
+- Update order status workflow
+- Update payment status (independent)
+- Filter & search functionality
+
+## 🔄 Complete Order Flow Overview
     CreateItems --> UpdateStock[Update Book Stock]
     UpdateStock --> ClearCart[Clear Cart]
     ClearCart --> CommitTx[COMMIT TRANSACTION]
