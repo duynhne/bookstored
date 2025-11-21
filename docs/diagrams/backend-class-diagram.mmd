@@ -1,0 +1,313 @@
+classDiagram
+    %% Models Layer
+    class User {
+        +int id
+        +string username
+        +string email
+        +string password_hash
+        +string full_name
+        +string role
+        +boolean is_active
+        +string customer_code
+        +string staff_code
+        +datetime created_at
+        +to_dict() dict
+        +generate_customer_code() string$
+        +generate_staff_code() string$
+    }
+    
+    class Book {
+        +int id
+        +string title
+        +string author
+        +string category
+        +text description
+        +decimal price
+        +int stock
+        +string image_url
+        +datetime created_at
+        +datetime updated_at
+        +to_dict() dict
+    }
+    
+    class Cart {
+        +int id
+        +int user_id
+        +int book_id
+        +int quantity
+        +datetime created_at
+        +to_dict() dict
+    }
+    
+    class Order {
+        +int id
+        +int user_id
+        +decimal total_amount
+        +string status
+        +string payment_status
+        +text shipping_address
+        +datetime created_at
+        +datetime updated_at
+        +to_dict() dict
+    }
+    
+    class OrderItem {
+        +int id
+        +int order_id
+        +int book_id
+        +int quantity
+        +decimal price
+        +to_dict() dict
+    }
+    
+    class Banner {
+        +int id
+        +string title
+        +text description
+        +string image_url
+        +string link
+        +string position
+        +int display_order
+        +boolean is_active
+        +datetime created_at
+        +to_dict() dict
+    }
+    
+    %% Data Access Objects (DAO Layer)
+    class UserDAO {
+        +find_by_id(user_id) User
+        +find_by_username(username) User
+        +find_by_email(email) User
+        +create(user_data) User
+        +update_profile(user_id, data) User
+        +find_all() List~User~
+        +find_by_role(role) List~User~
+        +toggle_status(user_id) User
+    }
+    
+    class BookDAO {
+        +find_all(page, per_page, filters) List~Book~
+        +find_by_id(book_id) Book
+        +create(book_data) Book
+        +update(book_id, data) Book
+        +delete(book_id) boolean
+        +search(keyword, category) List~Book~
+        +update_stock(book_id, quantity) boolean
+    }
+    
+    class CartDAO {
+        +find_by_user(user_id) List~Cart~
+        +find_by_id(cart_id) Cart
+        +find_existing(user_id, book_id) Cart
+        +create(user_id, book_id, quantity) Cart
+        +update_quantity(cart_id, quantity) Cart
+        +delete(cart_id) boolean
+        +delete_by_user_id(user_id) boolean
+    }
+    
+    class OrderDAO {
+        +find_by_user(user_id) List~Order~
+        +find_by_id(order_id) Order
+        +find_all() List~Order~
+        +create(order_data) Order
+        +update_status(order_id, status) Order
+        +get_statistics() dict
+    }
+    
+    class OrderItemDAO {
+        +find_by_order(order_id) List~OrderItem~
+        +create(order_item_data) OrderItem
+        +bulk_create(items) List~OrderItem~
+    }
+    
+    class BannerDAO {
+        +find_all(position) List~Banner~
+        +find_by_id(banner_id) Banner
+        +create(banner_data) Banner
+        +update(banner_id, data) Banner
+        +delete(banner_id) boolean
+        +toggle_status(banner_id) Banner
+    }
+    
+    %% Data Transfer Objects (DTO Layer)
+    class UserDTO {
+        +int id
+        +string username
+        +string email
+        +string full_name
+        +string role
+        +boolean is_active
+        +string customer_code
+        +string staff_code
+        +datetime created_at
+        +to_dict() dict
+        +from_model(user) UserDTO$
+    }
+    
+    class BookDTO {
+        +int id
+        +string title
+        +string author
+        +string category
+        +text description
+        +decimal price
+        +int stock
+        +string image_url
+        +to_dict() dict
+        +from_model(book) BookDTO$
+    }
+    
+    class CartDTO {
+        +int id
+        +int user_id
+        +int book_id
+        +Book book
+        +int quantity
+        +decimal subtotal
+        +to_dict() dict
+        +from_model(cart) CartDTO$
+    }
+    
+    class OrderDTO {
+        +int id
+        +int user_id
+        +decimal total_amount
+        +string status
+        +string payment_status
+        +text shipping_address
+        +List~OrderItem~ items
+        +to_dict() dict
+        +from_model(order) OrderDTO$
+    }
+    
+    %% Validators Layer
+    class BookValidator {
+        +validate_create(data) tuple
+        +validate_update(data) tuple
+        +validate_stock(quantity) boolean
+    }
+    
+    class CartValidator {
+        +validate_quantity(quantity) tuple
+        +validate_book_availability(book_id) tuple
+    }
+    
+    class OrderValidator {
+        +validate_cart_not_empty(cart_items) tuple
+        +validate_shipping_address(address) tuple
+    }
+    
+    %% Business Services Layer
+    class AuthService {
+        -user_dao UserDAO
+        +login(username, password) UserDTO
+        +register(user_data) UserDTO
+        +update_profile(user_id, data) UserDTO
+        +get_current_user(user_id) UserDTO
+    }
+    
+    class BookService {
+        -book_dao BookDAO
+        -book_validator BookValidator
+        +get_books(filters) List~BookDTO~
+        +get_book_by_id(book_id) BookDTO
+        +create_book(book_data) BookDTO
+        +update_book(book_id, data) BookDTO
+        +delete_book(book_id) boolean
+    }
+    
+    class CartService {
+        -cart_dao CartDAO
+        -book_dao BookDAO
+        -cart_validator CartValidator
+        +get_cart(user_id) List~CartDTO~
+        +add_to_cart(user_id, book_id, quantity) CartDTO
+        +update_cart_item(cart_id, quantity) CartDTO
+        +remove_from_cart(cart_id) boolean
+        +clear_cart(user_id) boolean
+    }
+    
+    class OrderService {
+        -order_dao OrderDAO
+        -order_validator OrderValidator
+        +get_orders(user_id) List~OrderDTO~
+        +get_order_by_id(order_id) OrderDTO
+        +create_order(user_id, data) OrderDTO
+    }
+    
+    class AdminService {
+        -user_dao UserDAO
+        -order_dao OrderDAO
+        -book_dao BookDAO
+        +get_all_users(role) List~UserDTO~
+        +toggle_user_status(user_id) UserDTO
+        +get_all_orders() List~OrderDTO~
+        +update_order_status(order_id, status) OrderDTO
+        +get_statistics() dict
+    }
+    
+    %% Workflows Layer
+    class OrderWorkflow {
+        -order_dao OrderDAO
+        -order_item_dao OrderItemDAO
+        -cart_dao CartDAO
+        -book_dao BookDAO
+        +create_order_with_items(user_id, address) Order
+        +process_transaction(order_data) Order
+    }
+    
+    %% Relationships - DAO to Models
+    UserDAO ..> User : uses
+    BookDAO ..> Book : uses
+    CartDAO ..> Cart : uses
+    OrderDAO ..> Order : uses
+    OrderItemDAO ..> OrderItem : uses
+    BannerDAO ..> Banner : uses
+    
+    %% Relationships - DTO to Models
+    UserDTO ..> User : converts
+    BookDTO ..> Book : converts
+    CartDTO ..> Cart : converts
+    OrderDTO ..> Order : converts
+    
+    %% Relationships - Services to DAOs
+    AuthService --> UserDAO : depends on
+    BookService --> BookDAO : depends on
+    CartService --> CartDAO : depends on
+    CartService --> BookDAO : depends on
+    OrderService --> OrderDAO : depends on
+    AdminService --> UserDAO : depends on
+    AdminService --> OrderDAO : depends on
+    AdminService --> BookDAO : depends on
+    
+    %% Relationships - Services to Validators
+    BookService --> BookValidator : uses
+    CartService --> CartValidator : uses
+    OrderService --> OrderValidator : uses
+    
+    %% Relationships - Services to DTOs
+    AuthService ..> UserDTO : returns
+    BookService ..> BookDTO : returns
+    CartService ..> CartDTO : returns
+    OrderService ..> OrderDTO : returns
+    AdminService ..> UserDTO : returns
+    AdminService ..> OrderDTO : returns
+    
+    %% Relationships - Workflows
+    OrderWorkflow --> OrderDAO : uses
+    OrderWorkflow --> OrderItemDAO : uses
+    OrderWorkflow --> CartDAO : uses
+    OrderWorkflow --> BookDAO : uses
+    OrderService --> OrderWorkflow : delegates to
+    
+    %% Model Relationships
+    User "1" --> "0..*" Cart : has
+    User "1" --> "0..*" Order : places
+    Book "1" --> "0..*" Cart : in
+    Book "1" --> "0..*" OrderItem : contains
+    Order "1" --> "0..*" OrderItem : has
+    
+    note for AuthService "Handles authentication,\nregistration, and\nprofile management"
+    note for OrderWorkflow "Manages complex\ntransactional operations\nfor order creation"
+    note for UserDTO "Excludes sensitive data\nlike password_hash"
+

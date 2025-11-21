@@ -10,37 +10,9 @@ Bookstore được xây dựng theo kiến trúc **Client-Server** với:
 
 ## 📐 Sơ Đồ Kiến Trúc Tổng Thể
 
-```mermaid
-graph TB
-    Client[Web Browser] -->|HTTPS/HTTP| Frontend[React Frontend<br/>Port 5173]
-    Frontend -->|REST API| Backend[Flask Backend<br/>Port 5000]
-    Backend -->|SQL| Database[(PostgreSQL<br/>Port 5432)]
-    Backend -->|Session| Session[Session Storage]
-    Backend -->|Upload| MinIO[MinIO Storage<br/>Port 9000]
-    
-    Admin[Admin Panel] -->|pgAdmin| pgAdmin[pgAdmin 4<br/>Port 5050]
-    pgAdmin -->|Manage| Database
-    
-    subgraph "Docker Container: Frontend"
-        Frontend
-    end
-    
-    subgraph "Docker Container: Backend"
-        Backend
-    end
-    
-    subgraph "Docker Container: Database"
-        Database
-    end
-    
-    subgraph "Docker Container: Storage"
-        MinIO
-    end
-    
-    subgraph "Docker Container: DB Management"
-        pgAdmin
-    end
-```
+**📊 Xem diagram chi tiết:** [`diagrams/system-architecture.mmd`](diagrams/system-architecture.mmd)
+
+**📊 Xem data flow diagram:** [`diagrams/data-flow-diagram.mmd`](diagrams/data-flow-diagram.mmd)
 
 ## 🎯 Mô Hình 3 Lớp (3-Layer Architecture)
 

@@ -1,0 +1,64 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#6366f1'}}}%%
+flowchart TD
+    Start([Users Management]) --> SelectType{Select Type}
+    
+    %% Customer Management
+    SelectType -->|Customers| ListCustomers[GET /api/admin/users?role=customer<br/>Display customer list]
+    ListCustomers --> CustomerAction{Action}
+    
+    CustomerAction -->|Add Customer| AddCustForm[Fill Customer Form:<br/>- Username<br/>- Email<br/>- Password<br/>- Full Name]
+    AddCustForm --> ValidateCust{Valid?}
+    ValidateCust -->|No| ShowError1[Show Errors]
+    ShowError1 --> AddCustForm
+    
+    ValidateCust -->|Yes| CreateCust[POST /api/register<br/>role=customer]
+    CreateCust --> GenCustCode[Auto-generate<br/>customer_code: KH001, KH002...]
+    GenCustCode --> InsertCust[INSERT INTO users]
+    InsertCust --> SuccessCust[Show Success Toast]
+    SuccessCust --> ListCustomers
+    
+    CustomerAction -->|Toggle Status| ToggleCustStatus[PUT /api/admin/users/:id/status]
+    ToggleCustStatus --> UpdateCustActive[UPDATE users<br/>SET is_active = NOT is_active]
+    UpdateCustActive --> ListCustomers
+    
+    CustomerAction -->|View Details| ViewCust[Display customer info<br/>& order history]
+    ViewCust --> ListCustomers
+    
+    CustomerAction -->|Back| SelectType
+    
+    %% Staff Management
+    SelectType -->|Staff| ListStaff[GET /api/admin/users?role=staff<br/>Display staff list]
+    ListStaff --> StaffAction{Action}
+    
+    StaffAction -->|Add Staff| AddStaffForm[Fill Staff Form:<br/>- Username<br/>- Email<br/>- Password<br/>- Full Name]
+    AddStaffForm --> ValidateStaff{Valid?}
+    ValidateStaff -->|No| ShowError2[Show Errors]
+    ShowError2 --> AddStaffForm
+    
+    ValidateStaff -->|Yes| CreateStaff[POST /api/register<br/>role=staff]
+    CreateStaff --> GenStaffCode[Auto-generate<br/>staff_code: NV001, NV002...]
+    GenStaffCode --> InsertStaff[INSERT INTO users]
+    InsertStaff --> SuccessStaff[Show Success Toast]
+    SuccessStaff --> ListStaff
+    
+    StaffAction -->|Toggle Status| ToggleStaffStatus[PUT /api/admin/users/:id/status]
+    ToggleStaffStatus --> UpdateStaffActive[UPDATE users<br/>SET is_active = NOT is_active]
+    UpdateStaffActive --> ListStaff
+    
+    StaffAction -->|View Details| ViewStaff[Display staff info]
+    ViewStaff --> ListStaff
+    
+    StaffAction -->|Back| SelectType
+    
+    SelectType -->|Back to Dashboard| Back([Return to Dashboard])
+    
+    style Start fill:#e1f5e1
+    style Back fill:#ffe1e1
+    style SelectType fill:#f0e1ff
+    style ValidateCust fill:#fff4e1
+    style ValidateStaff fill:#fff4e1
+    style SuccessCust fill:#d1fae5
+    style SuccessStaff fill:#d1fae5
+    style GenCustCode fill:#fef3c7
+    style GenStaffCode fill:#fef3c7
+

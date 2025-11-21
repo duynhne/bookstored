@@ -4,6 +4,8 @@
 
 Frontend được xây dựng với **React 18**, **TypeScript**, và **Tailwind CSS**, sử dụng **Vite** làm build tool. Ứng dụng là một **Single Page Application (SPA)** với client-side routing.
 
+**📊 Xem Component Diagram:** [`diagrams/frontend-component-diagram.mmd`](diagrams/frontend-component-diagram.mmd)
+
 ## 🏗 Cấu Trúc Frontend
 
 ```

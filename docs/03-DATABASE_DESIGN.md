@@ -1,20 +1,16 @@
-# Database Schema Documentation
+# 03 - Database Design & Schema
 
 ## Overview
 
-Database: PostgreSQL
-ORM: SQLAlchemy (Flask-SQLAlchemy)
+- **Database**: PostgreSQL 15
+- **ORM**: SQLAlchemy (Flask-SQLAlchemy)
+- **Migrations**: Flask-Migrate (Alembic)
 
-## Entity Relationship Diagram
+## 📊 Entity Relationship Diagram
 
-```mermaid
-erDiagram
-    USERS ||--o{ CART : has
-    USERS ||--o{ ORDERS : places
-    BOOKS ||--o{ CART : in
-    BOOKS ||--o{ ORDER_ITEMS : contains
-    ORDERS ||--o{ ORDER_ITEMS : has
-    ORDERS ||--o{ BANNERS : manages
+**Xem ERD chi tiết với constraints và indexes:** [`diagrams/database-erd.mmd`](diagrams/database-erd.mmd)
+
+### Overview ERD
 
     USERS {
         int id PK
