@@ -1,5 +1,48 @@
 # Changelog - Bookstore Migration
 
+## [2.5.0] - 2024-11-21
+
+### CI/CD Setup
+
+#### GitHub Actions Workflow
+- **Created `.github/workflows/docker-build.yml`**: Automated Docker image build and push
+  - Triggers on push to `main` branch
+  - Builds both frontend and backend images
+  - Pushes to GitHub Container Registry (ghcr.io)
+  - Images: `ghcr.io/duynhne/bookstore-frontend:latest` và `ghcr.io/duynhne/bookstore-backend:latest`
+  - Uses Docker Buildx for multi-platform support
+  - Implements GitHub Actions cache for faster builds
+  - Build time: ~3-5 minutes
+  
+#### Production Deployment Updates
+- **Updated `docker-compose.prod.yml`**: Changed from build to use pre-built images
+  - Backend: `image: ghcr.io/duynhne/bookstore-backend:latest`
+  - Frontend: `image: ghcr.io/duynhne/bookstore-frontend:latest`
+  - Eliminates need to build on production server
+  - Faster deployment with `docker-compose pull`
+  - Consistent images across environments
+  
+#### Documentation Updates
+- **`docs/09-DEPLOYMENT.md`**: Added comprehensive CI/CD section
+  - GitHub Actions workflow explanation
+  - Setup instructions for GitHub Container Registry
+  - Deploy with pre-built images guide
+  - Troubleshooting CI/CD issues
+  - Local build vs CI/CD comparison table
+  
+- **`.gitignore`**: Enhanced with additional exclusions
+  - Node.js (node_modules, npm-debug.log)
+  - Docker volumes (postgres_data_prod, minio_data_prod, pgadmin_data_prod)
+  - Frontend build artifacts (dist, build)
+  
+### Benefits
+- ✅ Automated builds on every push to main
+- ✅ No manual Docker build required on production
+- ✅ Consistent images across all environments
+- ✅ Faster deployments with pre-built images
+- ✅ GitHub Container Registry integration (free)
+- ✅ Cached builds for speed improvement
+
 ## [2.4.0] - 2024-11-21
 
 ### Upgraded Versions
