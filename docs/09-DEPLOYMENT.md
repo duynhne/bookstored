@@ -484,6 +484,126 @@ curl http://localhost/api/books
 curl http://localhost/health
 ```
 
+## 🚀 CI/CD with GitHub Actions
+
+### Overview
+
+Dự án đã được cấu hình với GitHub Actions để tự động build và push Docker images lên GitHub Container Registry (ghcr.io) mỗi khi có code push lên branch `main`.
+
+### Workflow Configuration
+
+File: `.github/workflows/docker-build.yml`
+
+**Trigger:** 
+- Push lên branch `main`
+- Manual trigger (workflow_dispatch)
+
+**Actions thực hiện:**
+1. Checkout code
+2. Setup Docker Buildx
+3. Login vào GitHub Container Registry
+4. Build và push Backend image → `ghcr.io/duynhne/bookstore-backend:latest`
+5. Build và push Frontend image → `ghcr.io/duynhne/bookstore-frontend:latest`
+6. Cache Docker layers để build nhanh hơn
+
+### Setup GitHub Repository
+
+#### 1. Push code lên GitHub
+
+```bash
+# Initialize git (nếu chưa có)
+git init
+
+# Add remote
+git remote add origin git@github.com:duynhne/bookstored.git
+
+# Add all files
+git add .
+
+# Commit
+git commit -m "feat: Initial commit with CI/CD setup"
+
+# Push to main
+git push -u origin main
+```
+
+#### 2. Enable GitHub Container Registry
+
+Sau khi push, GitHub Actions sẽ tự động chạy. Không cần setup secrets vì workflow sử dụng `GITHUB_TOKEN` có sẵn.
+
+#### 3. Make images public (Optional)
+
+Mặc định, images ở chế độ private. Để public:
+1. Truy cập https://github.com/duynhne?tab=packages
+2. Click vào package (bookstore-backend hoặc bookstore-frontend)
+3. **Package settings** → **Change visibility** → **Public**
+
+### Deploy với Pre-built Images
+
+Sau khi GitHub Actions build xong, bạn có thể deploy trực tiếp trên server mà không cần build:
+
+```bash
+# Pull docker-compose.prod.yml về server
+git clone git@github.com:duynhne/bookstored.git
+cd bookstored
+
+# Pull latest images từ GHCR
+docker-compose -f docker-compose.prod.yml pull
+
+# Deploy
+docker-compose -f docker-compose.prod.yml up -d
+
+# Verify
+docker-compose -f docker-compose.prod.yml ps
+```
+
+### Update Production với Images Mới
+
+```bash
+# Pull latest code
+git pull origin main
+
+# Pull new images (GitHub Actions đã build)
+docker-compose -f docker-compose.prod.yml pull
+
+# Restart services với images mới
+docker-compose -f docker-compose.prod.yml up -d
+
+# Verify
+curl http://localhost/health
+```
+
+### Xem Build Status
+
+- Truy cập: https://github.com/duynhne/bookstored/actions
+- Click vào workflow run để xem chi tiết
+- Build time: ~3-5 phút cho cả frontend và backend
+
+### Local Build vs CI/CD Build
+
+| Aspect | Local Build | CI/CD Build |
+|--------|-------------|-------------|
+| **Trigger** | Manual `docker-compose build` | Auto on push to main |
+| **Build time** | Phụ thuộc máy local | ~3-5 phút trên GitHub |
+| **Cache** | Local cache | GitHub cache |
+| **Result** | Images local | Images on ghcr.io |
+| **Deploy** | Direct deploy | Pull từ registry |
+
+### Troubleshooting CI/CD
+
+**Lỗi: "denied: permission_denied"**
+- Kiểm tra repo settings → Actions → Workflow permissions
+- Cần enable "Read and write permissions"
+
+**Images không public**
+- Vào GitHub Packages settings
+- Change visibility thành Public
+
+**Build fails**
+- Xem logs tại Actions tab
+- Kiểm tra Dockerfile syntax
+- Verify file paths trong workflow
+
 ### Access Production Application
 
 - **Frontend**: http://localhost (port 80)
