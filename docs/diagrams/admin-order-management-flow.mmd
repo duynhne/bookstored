@@ -35,7 +35,7 @@ sequenceDiagram
         Note over A,C: 3. Update Order Status
         A->>FE: Click "Sửa Trạng Thái"
         FE-->>A: Show status update modal
-        A->>FE: Select new status:<br/>- Pending (Chờ Xác Nhận)<br/>- Confirmed (Đã Xác Nhận)<br/>- Completed (Hoàn Thành)<br/>- Cancelled (Hủy)
+        A->>FE: Select new status:<br/>- Pending - Chờ Xác Nhận<br/>- Confirmed - Đã Xác Nhận<br/>- Completed - Hoàn Thành<br/>- Cancelled - Hủy
         A->>FE: Click "Cập Nhật"
         FE->>BE: PUT /api/admin/orders/:id<br/>{status: new_status}
         BE->>BE: Validate status transition
@@ -54,7 +54,7 @@ sequenceDiagram
         Note over A,C: 4. Update Payment Status
         A->>FE: Click "Sửa Trạng Thái" (same modal)
         FE-->>A: Show modal with payment dropdown
-        A->>FE: Select payment status:<br/>- Pending (Chưa Thanh Toán)<br/>- Paid (Đã Thanh Toán)
+        A->>FE: Select payment status:<br/>- Pending - Chưa Thanh Toán<br/>- Paid - Đã Thanh Toán
         A->>FE: Click "Cập Nhật"
         FE->>BE: PUT /api/admin/orders/:id<br/>{payment_status: new_status}
         BE->>DB: UPDATE orders<br/>SET payment_status = ?, updated_at = NOW()<br/>WHERE id = ?
@@ -87,6 +87,6 @@ sequenceDiagram
     %% Business Logic Notes
     rect rgb(255, 245, 230)
         Note over A,DB: 6. Status Transition Rules
-        Note right of BE: Valid transitions:<br/>- Pending → Confirmed<br/>- Confirmed → Completed<br/>- Any → Cancelled<br/><br/>Payment independent of order status:<br/>- Can be Paid even if Pending<br/>- Can be Pending even if Completed<br/>(COD payment after delivery)
+        Note right of BE: Valid transitions:<br/>- Pending → Confirmed<br/>- Confirmed → Completed<br/>- Any → Cancelled<br/><br/>Payment independent of order status:<br/>- Can be Paid even if Pending<br/>- Can be Pending even if Completed<br/>COD payment after delivery
     end
 

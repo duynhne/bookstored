@@ -1,5 +1,68 @@
 # Changelog - Bookstore Migration
 
+## [2.6.1] - 2024-11-21
+
+### Bug Fixes & High-level Diagrams
+
+#### Fixed Mermaid Parse Errors
+- **Issue**: Dấu ngoặc đơn `()` trong text nodes gây conflict với Mermaid syntax
+- **Fixed files**:
+  - `docs/diagrams/admin-orders-flow.mmd`: Changed `(Chưa TT)` → `- Chưa TT`
+  - `docs/diagrams/admin-order-management-flow.mmd`: Fixed 3 locations với ngoặc đơn
+- **Result**: All diagrams now render correctly on GitHub và Mermaid viewers
+
+#### Added High-level Business Flow Diagrams
+
+Created 3 new diagrams cho presentations và business overview:
+
+1. **`high-level-customer-journey.mmd`** - Customer Journey (Business Perspective)
+   - Visit website → Browse books
+   - Add to cart → Select items
+   - Checkout → Fill address
+   - Place order with COD
+   - Track order status
+   - Receive & pay
+   - Complete journey
+   - NO API endpoints, NO SQL, focus on user experience
+
+2. **`high-level-admin-workflow.mmd`** - Admin Daily Workflow (Business Perspective)
+   - Login to admin panel
+   - View dashboard overview
+   - Manage books, orders, users, content
+   - View statistics
+   - Logout
+   - Focus on business actions, không có technical implementation
+
+3. **`high-level-order-processing.mmd`** - Order Lifecycle (Business Perspective)
+   - Order placement by customer
+   - Admin review & confirmation
+   - Order preparation
+   - Shipping process
+   - Delivery & COD payment
+   - Order completion
+   - Post-delivery support
+   - Sequence diagram format, business flow only
+
+#### Documentation Updates
+- **`docs/00-README.md`**: Added "Diagram Types" section
+  - Explained difference giữa High-level và Technical diagrams
+  - Listed all diagrams theo category
+  - Clear purpose và use cases cho mỗi loại
+  
+#### Summary
+- **Total Diagrams**: 16 → 19 files
+- **Fixed**: 2 files với parse errors
+- **New**: 3 high-level business diagrams
+- **Updated**: 2 documentation files
+
+#### Benefits
+- ✅ All Mermaid diagrams render correctly
+- ✅ Flexible presentation options: business view vs technical view
+- ✅ Better for thesis defense: start with overview, then dive into details
+- ✅ Suitable for different audiences: stakeholders vs developers
+
+---
+
 ## [2.6.0] - 2024-11-21
 
 ### Diagram Refactoring for Thesis Report
